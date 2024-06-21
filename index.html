@@ -1,0 +1,558 @@
+<!DOCTYPE html> 
+<!-- informa al navegador qué lenguaje se usó para escribir el documento. -->
+<html lang="en"> 
+<!--agregue un atributo lang a la etiqueta html para establecer el idioma por defecto de la página-->
+<head> 
+<!--Contiene la información general del documento (incluye título, scripts, y style)-->
+<meta charset="UTF-8" /> 
+<!--representa varios tipos de metadatos que no se pueden expresar utilizando los elementos
+     título, base, enlace, estilo y script.-->
+     <title>Recorrido virtual</title>
+     <!--Contiene el título-->
+     <style>
+        /*Da estilo al documento*/
+         body {
+             margin: 0;
+             overflow: hidden;
+         }
+
+         #boton {
+             position: absolute;
+             width: 100%;
+             height: 100%;
+             width: 100%;
+             height: 100%;
+             display: flex;
+             flex-direction: column;
+             justify-content: center;
+             align-items: center;
+             text-align: center;
+             font-size: 40px;
+             cursor: pointer;
+         }
+
+         #activ {
+             color: green;
+         }
+     </style>
+</head>
+<body>
+    <!--Boton para activar el pointerlock-->
+    <div id="boton">
+        Para comenzar da clic en + para activar <p id="activ">(  )</p>Mira al rededor usando el mouse, pulsa Esc para parar
+    </div>
+    <!--Representa el contenido de un documento HTML-->
+    <canvas id="myCanvas">
+        <!--El elemento HTML canvas se puede utilizar para dibujar gráficos a través de
+            secuencias de comandos (por lo general JavaScript ).-->
+    </canvas>
+
+    <!-- Aquí va todo el código de three.js -->
+    <!-- script type="importmap" importa las librerías necesarias para three.js-->
+
+
+    <script src="./font/Stocky_Regular.js"></script>
+
+    <script type="importmap">
+        {
+        "imports":{
+            "three": "./js/three.module.js",
+
+
+            "three/PointerLockControls": "./js/PointerLockControls.js",
+            "three/interactive": "./js/three.interactive.js"
+        }
+        }
+    </script>
+    <script type="module">
+ /*Se utiliza para incrustar código ejecutable o datos;
+ esto generalmente se usa para incrustar o hacer referencia al código JavaScript.
+ En este apartado se importan librerias y se escribe todo el código*/
+
+////libreria de interacción
+ // 📚  Librerías importadas para hacer funcionar three.js y el OrbitControls
+        import * as THREE from 'three';
+        import { InteractionManager } from 'three/interactive';//añade libreria itneractiva
+        import { TWEEN } from './js/tween.module.min.js'; // Libreria movimiento suave
+        import { PointerLockControls } from 'three/PointerLockControls'; //control de camara
+
+     //🕹️🕹️ Renderer - Realiza una conexión entre el código y el canvas
+     var renderer = new THREE.WebGLRenderer({
+         canvas: document.getElementById('myCanvas'),
+         antialias: true,
+     });
+     renderer.setPixelRatio(window.decivePixelRatio);
+     renderer.setSize(window.innerWidth, window.innerHeight);
+     renderer.setClearColor(0xf1948a);
+
+     // 🎬 Creando nueva escena - Es el espacio donde se colocan los objetos
+     var scene = new THREE.Scene();
+
+
+
+
+
+  //💙nuevas librerias
+    import {TextGeometry} from "./js/TextGeometry.js";
+   import{FontLoader} from "./js/FontLoader.js";
+
+    import V01 from "./js/VERANO01.js"
+    import P02 from "./js/PRIMAVERA02.js"
+    import O03 from "./js/OTOÑO03.js"
+    import I04 from "./js/INVIERNO04.js"
+      //console.log(OrbitControls);
+
+      //🕹️🕹️ Renderer - Realiza una conexión entre el código y el canvas
+        var renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById('myCanvas'),
+        antialias: true,
+      });
+      renderer.setPixelRatio(window.decivePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x00E4F0);
+
+      ///background
+     var scene = new THREE.Scene();
+      var loader = new THREE.TextureLoader();
+        var bgTexture = loader.load('./assets/cielo.jpg');
+        scene.background = bgTexture;
+
+      //🎥🎥 Agregar una cámara de perspectiva
+      var camera = new THREE.PerspectiveCamera(
+        30,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      scene.add(camera);
+
+      //Settings de la cámara
+     camera.position.set(0, 4, 300);
+
+     // agregar el pointlock ###################################################################
+     var controls = new PointerLockControls(camera, renderer.domElement);
+     document.getElementById('activ').onclick = () => {
+         controls.lock()
+     }
+     controls.addEventListener('lock', function () {
+         boton.style.display = 'none';
+     });
+     controls.addEventListener('unlock', function () {
+         boton.style.display = '';
+     });
+
+     ////////////// Añadir interactionManager ######################################################################################
+     var interactionManager = new InteractionManager(
+         renderer,
+         camera,
+         renderer.domElement
+     );
+
+     var scene = new THREE.Scene();
+
+     //colocar el código aqui
+     ///////////////////////////
+
+     // Evento para redimensionar el canvas
+     // Sizes: Objeto donde se toman los tamaños interiores 'inner' de la ventana.
+     const sizes = {
+         width: window.innerWidth,
+         height: window.innerHeight,
+     };
+
+     // Tomando el 'canvas' mediante el id 'myCanvas' del HTML para cambiar sus dimensiones
+     const canvas = document.getElementById('myCanvas');
+
+     // Evento que se ejecutará al redimensionar 'resize' nuestra ventana
+     window.addEventListener('resize', () => {
+
+         // Actualizando los valores del objeto 'sizes' con las medidas internas de la ventana
+         sizes.width = window.innerWidth;
+         sizes.height = window.innerHeight;
+
+         // Actualización de los valores en la cámara como la relación-aspecto y la
+         //matriz de proyección.
+         camera.aspect = sizes.width / sizes.height;
+         camera.updateProjectionMatrix();
+
+         // Aplicando al render el nuevo tamaño del 'viewport'
+         renderer.setSize(sizes.width, sizes.height);
+     });
+
+     //Settings de la cámara
+     camera.position.set(100, 100, 300);
+
+     //GridHelper
+     const gridHelper = new THREE.GridHelper(50, 50);
+     const axesHelper = new THREE.AxesHelper(50);
+     //scene.add (gridHelper);
+     // scene.add (axesHelper);
+
+//🖤SOMBRA
+renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+
+        //🤍LUZ
+        var light1 = new THREE.AmbientLight(0xffffff,0.2);
+        light1.position.set(0,100,0);
+        scene.add(light1);
+
+        var light2= new THREE.AmbientLight(0xFFFFFF,0.5);
+        light2.position.set(60,60,100);
+        scene.add(light2);
+
+        var light5= new THREE.DirectionalLight(0xFFFFFF,0.5);
+        light5.position.set(20,100,100);
+        scene.add(light5);
+
+        var light3= new THREE.AmbientLight(0xfffff,0xFFFFFF,0.5);
+        light3.position.set(-20,60,0);
+
+        var light4= new THREE.AmbientLight(0xfffff,0xFFFFFF,0.5);
+
+///////////////////////
+
+     //texto y carteles
+     //texto y cartel primavera
+     //cartel
+     var geometry60 = new THREE.BoxGeometry(40, 1, 15, 1, 1, 1);
+     var material60 = new THREE.MeshLambertMaterial({ color: 0x21AD92 });
+     var mesh60 = new THREE.Mesh(geometry60, material60);
+     mesh60.position.set(-220, 25, 85);
+     mesh60.rotation.set(1.57, 0, 0);
+     scene.add(mesh60);
+     mesh60.receiveShadow = true;
+
+     //💙texto
+     var loader = new FontLoader();
+     var font = loader.parse(fontJSON);
+     var texto1 = new TextGeometry('Spring', {
+         font: font,
+         size: 6,
+         height: 2,
+     });
+
+     texto1.center();
+     var materialtexto1 = new THREE.MeshLambertMaterial(
+         {
+             color: 0x2CCFE2,
+             emissive: 0x2CCFE2,
+             shading: THREE.FlatShading
+         }
+     );
+     var meshtexto1 = new THREE.Mesh(texto1, materialtexto1);
+meshtexto1.position.set(-220, 25, 88);
+scene.add(meshtexto1);
+meshtexto1.castShadow = true;
+
+   
+
+     //texto y cartel verano
+     //cartel
+     var geometry61 = new THREE.BoxGeometry(40, 2, 15, 1, 1, 1);
+     var material61 = new THREE.MeshLambertMaterial({ color: 0xF8BC32 });
+     var mesh61 = new THREE.Mesh(geometry61, material61);
+     mesh61.position.set(35, 45, 90);
+     mesh61.rotation.set(1.57, 0, 0);
+     scene.add(mesh61);
+     mesh61.receiveShadow = true;
+
+     //💙texto
+     var loader = new FontLoader();
+     var font = loader.parse(fontJSON);
+     var texto2 = new TextGeometry('Summer', {
+         font: font,
+         size: 6,
+         height: 2,
+     });
+
+     texto2.center();
+     var materialtexto2 = new THREE.MeshLambertMaterial(
+         {
+             color: 0xFBFF03,
+             emissive: 0xF8D24F,
+             shading: THREE.FlatShading
+         }
+     );
+
+     var meshtexto2 = new THREE.Mesh(texto2, materialtexto2);
+     meshtexto2.position.set(35, 45, 92);
+     scene.add(meshtexto2);
+     meshtexto2.castShadow = true;
+
+     //texto y cartel otoño
+     //cartel
+     var geometry62 = new THREE.BoxGeometry(30, 1, 15, 1, 1, 1);
+     var material62 = new THREE.MeshLambertMaterial({ color: 0x3E1282 });
+     var mesh62 = new THREE.Mesh(geometry62, material62);
+     mesh62.position.set(-220, 50, -85);
+     mesh62.rotation.set(1.57, 0, 0);
+     scene.add(mesh62);
+     mesh60.receiveShadow = true;
+
+     //💙texto
+     var loader = new FontLoader();
+     var font = loader.parse(fontJSON);
+     var texto3 = new TextGeometry('Fall', {
+         font: font,
+         size: 6,
+         height: 2,
+     });
+
+     texto3.center();
+     var materialtexto3 = new THREE.MeshLambertMaterial(
+         {
+             color: 0xB3B0B6,
+             emissive: 0x6B676E,
+             shading: THREE.FlatShading
+         }
+     );
+     var meshtexto3 = new THREE.Mesh(texto3, materialtexto3);
+     meshtexto3.position.set(-220, 50, -88);
+     scene.add(meshtexto3);
+     meshtexto3.castShadow = true;
+
+     //texto y cartel invierno
+     //cartel
+     var geometry130 = new THREE.BoxGeometry(40, 2, 15, 1, 1, 1);
+     var material130 = new THREE.MeshLambertMaterial({ color: 0x1F618D });
+     var mesh130 = new THREE.Mesh(geometry130, material130);
+     mesh130.position.set(35, 45, -92);
+     mesh130.rotation.set(1.57, 0, 0);
+     scene.add(mesh130);
+     mesh130.receiveShadow = true;
+
+     //💙texto
+     var loader = new FontLoader();
+     var font = loader.parse(fontJSON);
+     var texto4 = new TextGeometry('Winter', {
+         font: font,
+         size: 6,
+         height: 2,
+     });
+
+     texto4.center();
+     var materialtexto4 = new THREE.MeshLambertMaterial(
+         {
+             color: 0x5F6A6A,
+             emissive: 0xA6ACAF,
+             shading: THREE.FlatShading
+         }
+     );
+
+     var meshtexto4 = new THREE.Mesh(texto4, materialtexto4);
+     meshtexto4.position.set(35, 45, -92);
+     scene.add(meshtexto4);
+     meshtexto4.castShadow = true;
+
+     //Bases
+     //base primavera
+     //pasto
+     var geometry1 = new THREE.BoxGeometry(250, 2, 200, 1, 1, 1);
+     var texture1 = new THREE.TextureLoader().load("./assets/pasto.jpg");
+     var material1 = new THREE.MeshLambertMaterial({ map: texture1 });
+     var mesh1 = new THREE.Mesh(geometry1, material1);
+     mesh1.position.set(-125, 0, 0);
+     mesh1.rotation.set(0, 0, 0);
+     scene.add(mesh1);
+
+     //base verano
+     //playa
+     var geometry20 = new THREE.BoxGeometry(250, 2, 200, 1, 1, 1);
+     var texture2 = new THREE.TextureLoader().load("./assets/arena1.jpg");
+     var material20 = new THREE.MeshLambertMaterial({ map: texture2 });
+     var mesh20 = new THREE.Mesh(geometry20, material20);
+     mesh20.position.set(125, -0.3, 0);
+     mesh20.rotation.set(0, 0, 0);
+     //scene.add(mesh20);
+     texture2.wrapS = THREE.RepeatWrapping;
+     texture2.wrapT = THREE.RepeatWrapping;
+     texture2.repeat.set(2, 2);
+     texture2.rotation = 0.785;
+     texture2.offset.x = -0.22;
+     texture2.offset.y = -0.5;
+
+     //base otoño
+     //piso
+     var geometry2 = new THREE.BoxGeometry(250, 2, 200, 1, 1, 1);
+     var texture5 = new THREE.TextureLoader().load("./assets/hojas.jpg");
+     var material2 = new THREE.MeshLambertMaterial({ map: texture5 });
+     var mesh2 = new THREE.Mesh(geometry2, material2);
+     mesh2.position.set(-125, 0, 0);
+     mesh2.rotation.set(0, 0, 0);
+     scene.add(mesh2);
+
+     //base invierno
+     //plano
+     var geometry21 = new THREE.BoxGeometry(250, 2, 200, 1, 1, 1);
+     var texture9 = new THREE.TextureLoader().load("./assets/nieve1.jpg");
+     var material21 = new THREE.MeshLambertMaterial({ map: texture9 });
+     var mesh21 = new THREE.Mesh(geometry21, material21);
+     mesh21.position.set(125, -0.3, 0);
+     mesh21.rotation.set(0, 0, 0);
+     scene.add(mesh21);
+     texture9.wrapS = THREE.RepeatWrapping;
+     texture9.wrapT = THREE.RepeatWrapping;
+     texture9.repeat.set(2, 2);
+     texture9.rotation = 0.785;
+     texture9.offset.x = -0.22;
+     texture9.offset.y = -0.5;
+
+//conexion js
+const   EV1 = V01({x: -10, y:0, z:-10});
+scene.add(EV1);
+
+const   EP2 = P02({x: -10, y:0, z:-10});
+scene.add(EP2);
+
+const   EO3 = O03({x: -10, y:0, z:-210});
+scene.add(EO3);
+
+const   EI4 = I04({x: -10, y:0, z:-210});
+     scene.add(EI4);
+
+     // inician las interacciones ################################################################################################################
+     //Se añade el "evento" mouse arriba, mouse se retira, click
+
+     ///MESH 1 ESFERA ROJA
+
+     EV1.addEventListener('mouseover', (event) => {  //Evento para cuando colocamos el cursor sobre la figura
+         event.target.material.color.set(0xff0000); //se indica que pasara con el objetivo de la interacción, en este caso cambia de color
+         document.body.style.cursor = 'pointer';
+     });
+     EV1.addEventListener('mouseout', (event) => {  //evento para cuando quitas el cursor de la figura, si no se agrega se le quedara el color que se puso en el mouseover
+         event.target.material.color.set(0xff0000);
+         document.body.style.cursor = 'default';
+     });
+     EV1.addEventListener('mousedown', (event) => { //Evento para cuando el mouse esta presionado
+         event.target.material.color.set(0x512E5F);
+         event.target.scale.set(1.1, 1.1, 1.1);//se indica que pasara con el objetivo de la interacción, en este caso cambia de tamaño
+     });
+
+     EV1.addEventListener('click', (event) => { //evento para cuando se suelta el clic
+         var coords = { x: camera.position.x, y: camera.position.y, z: camera.position.z };// se crea un objeto para "contener" las coordenadas
+         event.target.scale.set(1.0, 1.0, 1.0);
+         new TWEEN.Tween(coords) //Se declara el TWEEN, que permite que los movimientos sean fluidos y no de golpe
+             //.to({x:20, y: 10, z: 5}) //se indican los cambios que se presentaran y en que variables,
+             .to({ x: 50, y: 6, z: 25 }) //se indican los cambios que se presentaran y en que variables,
+             .onUpdate(() => camera.position.set(coords.x, coords.y, coords.z)  //Se actualizan las vartiables en el objetivo del movimiento
+             )
+             .start();//El movimiento inicia
+     });
+
+     ///MESH 2 ESFERA MARILLA
+
+     EP2.addEventListener('mouseover', (event) => {
+         event.target.material.color.set(0xffff00);
+         document.body.style.cursor = 'pointer';
+     });
+     EP2.addEventListener('mouseout', (event) => {
+         event.target.material.color.set(0xffff00);
+         document.body.style.cursor = 'default';
+     });
+     EP2.addEventListener('mousedown', (event) => { //Evento para cuando el mouse esta presionado
+         event.target.material.color.set(0x512E5F);
+         event.target.scale.set(1.1, 1.1, 1.1);//se indica que pasara con el objetivo de la interacción, en este caso cambia de tamaño
+     });
+     EP2.addEventListener('click', (event) => {
+         var coords = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+         event.target.scale.set(1.0, 1.0, 1.0);
+         new TWEEN.Tween(coords)
+             .to({ x: 40, y: 10, z: 100 })
+             .onUpdate(() => camera.position.set(coords.x, coords.y, coords.z)
+             )
+             .start();
+     });
+
+     ///MESH 3 ESFERA AZUL
+     EO3.addEventListener('mouseover', (event) => {
+         event.target.material.color.set(0x0000ff);
+         document.body.style.cursor = 'pointer';
+     });
+     EO3.addEventListener('mouseout', (event) => {
+         event.target.material.color.set(0x0000ff);
+         document.body.style.cursor = 'default';
+     });
+     EO3.addEventListener('mousedown', (event) => { //Evento para cuando el mouse esta presionado
+         event.target.material.color.set(0x512E5F);
+         event.target.scale.set(1.1, 1.1, 1.1);//se indica que pasara con el objetivo de la interacción, en este caso cambia de tamaño
+     });
+     EO3.addEventListener('click', (event) => {
+         var coords = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+         event.target.scale.set(1.0, 1.0, 1.0);
+         new TWEEN.Tween(coords)
+             .to({ x: -40, y: 10, z: 100 })
+             .onUpdate(() => camera.position.set(coords.x, coords.y, coords.z)
+             )
+             .start();
+     });
+
+
+     ///MESH 4 ESFERA MAGENTA
+     EI4.addEventListener('mouseover', (event) => {
+         event.target.material.color.set(0xff00ff);
+         document.body.style.cursor = 'pointer';
+     });
+     EI4.addEventListener('mouseout', (event) => {
+         event.target.material.color.set(0xff00ff);
+         document.body.style.cursor = 'default';
+     });
+     EI4.addEventListener('mousedown', (event) => { //Evento para cuando el mouse esta presionado
+         event.target.material.color.set(0x512E5F);
+         event.target.scale.set(1.1, 1.1, 1.1);//se indica que pasara con el objetivo de la interacción, en este caso cambia de tamaño
+     });
+     EI4.addEventListener('click', (event) => {
+         var coords = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+         event.target.scale.set(1.0, 1.0, 1.0);
+         new TWEEN.Tween(coords)
+             .to({ x: 0, y: 10, z: 20 })
+             .onUpdate(() => camera.position.set(coords.x, coords.y, coords.z)
+             )
+             .start();
+     });
+
+
+     //////// FIN INTERACCION
+
+
+     /////////
+     interactionManager.add(EV1); ////////////// Añadir el elemento que se quiere animar al interactionmanager, si no se respetan las interacciones
+     interactionManager.add(EP2);
+     interactionManager.add(EO3);
+     interactionManager.add(EI4);
+
+
+
+     //// CRUZ CENTRAL QUE SIRVE DE GUIA
+     var geometryx = new THREE.BoxGeometry(.0075, .05, .075);
+     var materialx = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
+     var meshx = new THREE.Mesh(geometryx, materialx);
+     meshx.position.set(0, 0, -1);
+     var geometryx2 = new THREE.BoxGeometry(.05, .0075, .075);
+     var meshx2 = new THREE.Mesh(geometryx2, materialx);
+     meshx2.position.set(0, 0, -1);
+     scene.add(camera);
+     camera.add(meshx, meshx2);
+
+
+
+///////////////////
+
+ //🎰🎰Rendering y animación
+ requestAnimationFrame(render);
+      function render() {
+
+
+      //🪄🪄 Animación -
+
+      //🎮🎮Actualización del OrbitControls para generar la suavidad de movimiento
+      //controls.update();
+
+      //Llamado para renderizar y volver a llamar a la misma función (render)
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+      }</script>
+</body>
+</html>
+
